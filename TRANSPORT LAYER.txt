@@ -1,0 +1,76 @@
+A Camada de Transporte é como o coração de qualquer protocolo hierárquico. Seu objetivo/tarefa é fornecer transporte da dados confiável e econômico da máquina de origem para a máquina de destino independente da rede física ou redes em uso.
+
+6.1.1 - Serviços Prestados à Camada de Sessão 
+
+O objetivo final da camada de transporte é fornecer um serviço eficiente, confiável e econômico para os usuários. A camada de transporte usa serviços fornecidos pela camada de rede, o hardware e/ou software que faz o trabalho é chamada de entidade de transporte. 
+Existem dois tipos de serviço de transporte: orientado para conexão e sem conexão. Ambos tem três fases: estabelecimento, transferência de dados e liberação, endereçamento e controle de fluxo são semelhantes em ambas camadas. 
+Se os usuários não tem controle sobre a sub-rede não podem resolver o problema de mau serviço usando IMPs melhores ou colocando mais tratamento de erros na camada de enlace de dados. (NAO COLOQUEI)
+A existência da camada de transporte torna possível que o serviço de transporte seja mais confiável que o serviço de rede subjacente, além disso, as primitivas de serviço de transporte podem ser projetadas para serem independentes das primitivas de seriço de rede. 
+Graças à camada de transporte, é possível que os programas de aplicação trabalhem em uma ampla variedade de redes, sem ter que se preocupar em lidar com diferentes interfaces de sub-rede e transmissão não confiável.
+
+6.1.2 - Qualidade de Serviço 
+
+A camada de transporte considera a função primária como melhorar o QOS(Quality of Service) fornecido pela camada de rede, se o serviço for impecavel, a camada de transporte deve preencher a lacuna entre o que os usuários de transporte desejam e o que a camada de rede fornece.
+Quando ocorre atraso no estabelecimento da da conexão é devido a quantidade de tempo decorrido entre uma conexão de transporte a ser solicitada e a confirmação ser recebida pelo usuário do serviço de transporte. Quanto menor o atraso melhor o serviço.
+O atraso de trânsito mede o tempo entre o envio de uma mensagem pelo usuário de transporte na máquina de origem e o início do recebimento pelo usuário de transporte na máquina de destino, assim como a taxa de transferência, cada direção é tratada separadamente.
+A taxa de erro residual mede o número de mensagens perdidas ou distorcidas como uma fração do total enviado no período de amostragem. em teoria, a taxa de erro residual deveria ser zero, uma vez que é função da camada de transporte ocultar todos os erros da camada de rede, na prática, pode ter algum valor finito.
+O parâmetro de prioridade fornece uma maneira para um usuário de transporte indicar que algumas de suas conexões são mais importantes do que outras e, em caso de congestionamento, certificar-se de que as conexões de alta prioridade sejam atendidas antes das de baixa prioridade.
+O parâmetro de resiliência dá a probabilidade de a própria camada de transporte encerrar espontaneamente uma conexão devido a problemas internos ou congestionamento.
+
+6.1.4 - Protocolos de Transporte
+
+O serviço de transporte é implementado por um protocolo de transporte usado entre as duas entidades de transporte.
+Na camada de enlace de dados, dois IMPs se comunicam diretamente por meio de um canal físico, enquanto na camada de transporte, esse canal físico é substituído por toda a sub-rede. Esta diferença tem muitas implicações importantes para os protocolos, e não é necessário que um IMP especifique qual IMP ele deseja falar com cada linha de saída que especifica um IMP particular, na camada de transporte o endereçamento explícito de destinos é necessário.(FIGURA 6.6)
+A diferença entre a camada de enlace de dados e a camada de transporte é a existência potencial de capacidade de armazenamento na sub-rede.
+Do ponto de vista do projetista do protocolo de transporte, as propriedades reais da sub-rede são menos importantes do que o serviço oferecido pela camada de rede.
+para estudar os protocolos de transporte, agruparemos os vários tipos de serviços de rede em três categorias. A fração de pacotes perdidos, duplicados ou distorcido é insignificante. (FIGURA 6.7)
+Uma situação mais comum para WANs é o serviço do tipo B, pacotes individuais raramente, ou nunca, perdidos, mas de vez em quando a camada de rede emite N-RESETs, devido a congestionamento interno, problemas de hardware ou bugs de software.
+Os protocolos de transporte para redes do tipo B são mais complexos do que os do tipo A.
+O tipo C é o serviço de rede que não é confiável o suficiente para ser confiável.
+
+6.1.5 - Elementos de Protocolos de Transporte
+
+Os recursos exatos fornecidos por um protocolo de transporte dependem do ambiente em que opera e do tipo de serviço que deve fornecer.
+Para realmente mover bits pela rede, as entidades de transporte normalmente estabelecem uma conexão de rede e controlam o mapeamento entre as conexões de transporte e as conexões de rede.
+Ao discutir a camada de enlace de dados, chamamos as unidades trocadas de "quadros". Na camada de rede, nós os chamamos de "pacotes".
+As mensagens a serem transmitidas podem ter qualquer comprimento, portanto, cabe à camada de transporte dividi-las em TPDUs(Unidade de dados do protocolo de transporte) para transporte.
+Se várias conexões estiverem abertas em uma máquina, as entidades de transporte terão que dar a cada conexão um número e colocar o número da conexão em cada TPDU, de modo que quando uma TPDU chegar na outra extremidade, a entidade de transporte receptora saberá a qual conexão associe-o com. Nem é preciso dizer que o transporte de TPDUs também é um recurso de todos os protocolos de transporte.
+Todos os protocolos devem lidar com erros de protocolo. Se uma TPDU inválida chegar, deve haver regras que regem o que fazer. Em alguns casos, a ação pode ser ignorá-lo, em outros pode ser liberar alguma conexão. Erros de protocolo não deveriam acontecer, mas permitir que uma entidade de transporte apenas trave se um ocorrer não é uma boa ideia.
+O controle de fluxo da camada de transporte consiste em ter uma parte explícita do protocolo de transporte que trata de quantas TPDUs podem ser enviadas a qualquer momento. Um esquema de janela deslizante pode ser usado, mas também existem outras possibilidades. Se nenhum esquema de controle de fluxo explícito for usado na camada de transporte, o controle de fluxo subjacente da conexão de rede será usado.
+Se a rede interromper a conexão por completo, em vez de apenas redefini-la, será responsabilidade da camada de transporte estabelecer uma nova conexão para trabalhar.
+
+
+6.2.1 - Endereçando
+
+Quando um usuário (de transporte) deseja estabelecer uma conexão com outro usuário, ele deve especificar a qual usuário remoto se conectar. O método normalmente usado é para definir pontos de acesso do serviço de transporte (TSPAs) aos quais os processos podem se anexar e aguardar a chegada dos pedidos de conexão.
+A figura a seguir (6.10) ilustra a relação entre NSAP, TSAP, conexão de rede e conexão de transporte.
+Embora os endereços TSAP estáveis possam funcionar para um pequeno número de serviços principais que nunca mudam, em geral, os processos do usuário muitas vezes desejam se comunicar com outros processos do usuário que existem por pouco tempo e não têm um endereço TSAP conhecido com antecedência.
+Embora o protocolo de conexão inicial da ARPANET funcione bem para os servidores que podem ser criados conforme a necessidade, existem muitas sistemas em que os serviços existem independentemente do servidor de processo. Um servidor de arquivos precisa ser executado em um hardware especial e não pode ser criado rapidamente quando alguém deseja falar com ele.
+Existe um processo especial denominado servidor de nomes ou, às vezes, servidor de diretório. Para encontrar o endereço TSAP correspondente a um determinado nome de serviço, como "hora do dia", um usuário estabelece uma conexão com o servidor de nomes.
+O usuário então envia uma mensagem mostrando o nome do serviço e o servidor de nomes envia de volta o endereço TSAP. Em seguida, o usuário libera a conexão com o servidor de nomes e estabelece uma nova com o serviço desejado.
+A função do servidor de nomes é análoga à do operador de assistência à lista no sistema telefônico, ele fornece um mapeamento de nomes em números.
+Outra questão interessante é como a entidade de transporte local sabe em qual máquina o TSAP está localizado? Como a entidade de transporte sabe qual NSAP usar para configurar uma conexão de rede para a entidade de transporte remota que mage o TSAP solicitado?
+A resposta depende da estrutura dos endereços TSAP. Uma estrutura possível é que os endereços TSAP são endereços hierárquicos. Com endereços hierárquicos, o endereço consiste em uma sequência de campos usados para particionar desarticulamente o espaço de endereço.
+
+6.2.3 - Liberando uma conexão
+
+Liberar uma conexão é muito mais fácil do que estabelecer uma, no entanto, existem mais armadilhas do que se poderia esperar.
+Existe um problema famoso que trata desse assunto. É o chamado problema dos dois exércitos. Imagine que um exército branco está acampado em um vale em que ambas as encostas em torno são exércitos azuis. O exército branco é maior do que qualquer um dos exércitos azuis sozinho, mas juntos eles são maiores do que o exército branco. Se qualquer um dos exércitos azuis atacar por si mesmo, ele será derrotado, mas se os dois exércitos azuis atacarem simultaneamente, eles serão vitoriosos. (FIGURA 6.15)
+Os exércitos azuis obviamente querem sincronizar seus ataques. No entanto, seu único meio de comunicação é enviar mensageiros a pé para o vale, onde podem ser capturados e a mensagem perdida. A questão é: existe um protocolo que permite que os exércitos azuis ganhem?
+Suponha que o comandante do exército azul #1 envie uma mensagem dizendo: "Proponho que atacemos na madrugada de 29 de março. Que tal?" Agora, suponha que a mensagem chegue e o comandante do exército azul #2 concorde, e que sua resposta chegue em segurança ao exército azul # 1. O ataque acontecerá? Provavelmente não, porque o comandante #2 não sabe se sua resposta foi recebida. Se não o fizesse, o exército azul #1 não atacaria, então seria uma tolice ele atacar a batalha.
+
+Agora, vamos melhorar o protocolo tornando-o um handshake de três vias. O iniciador da proposta original deve reconhecer a resposta. Assumindo que nenhuma mensagem seja perdida, o exército azul # 2 receberá o reconhecimento, mas o comandante do exército azul # 1 agora hesitará. Afinal, ele não sabe se seu reconhecimento foi aprovado e, caso contrário, ele sabe que o exército azul # 2 não atacará.
+Embora esse protocolo geralmente seja suficiente em teoria, ele pode falhar se o DR (solicitação de desconexão) inicial e as retransmissões forem perdidos. O remetente desistirá e excluirá a conexão, enquanto o over side não sabe nada sobre as tentativas de se desconectar e ainda está totalmente ativo. Esta situação resulta em uma conexão entreaberta.
+Uma maneira de eliminar as conexões semiabertas é ter uma regra dizendo que, se nenhuma TPDU chegar por um determinado número de segundos, a conexão será automaticamente desconectada. Dessa forma, se um lado se desconectar, o outro lado detectará a falta de atividade e também se desconectará. Obviamente, se essa regra for introduzida, é necessário que cada entidade de transporte tenha um cronômetro que seja interrompido e reiniciado sempre que uma TPDU for enviada.
+
+6.2.4 - Gerenciamento de conexão baseado em cronômetro
+
+O problema original que colocamos era como evitar o pesadelo de antigos pacotes duplicados contendo CR, DATA e DR TPDUs aparecendo repentinamente do nada e sendo aceitos como legítimos. Uma maneira é cada entidade de transporte atribuir um identificador de conexão exclusivo a cada conexão para que possa reconhecer TPDUs de conexões anteriores. Uma segunda maneira é usar handshakes de três vias para estabelecer conexões.
+Quando um remetente deseja enviar um fluxo de TPDUs consecutivos para um receptor, ele cria um reator de conexão internamente. Este registro de conexão mantém o controle de quais TPDUs foram enviadas, quais confirmações foram recebidas e assim por diante. Sempre que um registro de conexão é criado, um cronômetro é iniciado.
+Sempre que um TPDU é enviado usando um registro de conexão criado anteriormente, o cronômetro é iniciado novamente. Se o cronômetro expirar (significando que nada foi enviado em um determinado intervalo), o registro de conexão será excluído. Os intervalos de tempo para o emissor e o receptor são diferentes e cuidadosamente escolhidos para que o receptor sempre alcance o tempo limite e exclua seu registro de conexão antes do remetente.
+Quando uma TPDU com o sinalizador DRF (Data Run Flag) definido chega ao receptor, o receptor anota seu número de sequência e cria um registro de conexão. Os TPDUs subsequentes só serão aceitos se estiverem em sequência. Se o primeiro TPDU a chegar ao receptor não tiver o sinalizador DRF definido, ele será descartado.
+Eventualmente, o primeiro TPDU (original ou retransmissão) chegará e o registro de conexão poderá ser criado. Em outras palavras, um registro de conexão só é criado quando chega um TPDU com DRF definido.
+Uma sequência de TPDUs é enviada e todos são recebidos em ordem e confirmados. Quando o remetente obtém a confirmação da TPDU final enviada e vê o sinalizador ARF (Acknowledgement Run Flag), ele interrompe todos os temporizadores de retransmissão. Se não houver mais dados provenientes do usuário de transporte, eventualmente o registro de conexão do receptor expira e, posteriormente, o do remetente também.
+Quando o usuário de transporte finalmente consegue enviar uma nova mensagem, uma das três situações deve ser suspensa: 1. Tanto o remetente quanto o destinatário ainda têm seus registros de conexão.
+2. O remetente tem seu registro de conexão, mas o receptor não.
+3. Ambos os registros de conexão foram excluídos.
